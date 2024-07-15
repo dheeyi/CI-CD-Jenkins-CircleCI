@@ -1,0 +1,75 @@
+version: 2.1
+
+orbs:
+  aws-cli: circleci/aws-cli@4.1.3
+  aws-sam-serverless: circleci/aws-sam-serverless@6.0.1
+  node: circleci/node@5.2.0
+
+jobs:
+  deploy-dev:
+    executor: sam/default
+    steps:
+      - checkout
+      - sam/install
+      - aws-cli/role-arn-setup:
+          profile-name: role-assumer-profile
+          role-arn: $SAM_DEPLOYER_ROLE_DEV
+      - run: aws sts assume-role --role-arn $SAM_DEPLOYER_ROLE_DEV --role-session-name SAMCLI-circle-ci-service-Session
+      - sam/build:
+          profile-name: role-assumer-profile
+          template: ./template.yaml
+      - sam/deploy:
+          capabilities: CAPABILITY_NAMED_IAM
+          parameter-overrides: 'Environment="dev"'
+          profile-name: role-assumer-profile
+          stack-name: circle-ci-service-dev
+  deploy-staging:
+    executor: sam/default
+    steps:
+      - checkout
+      - sam/install
+      - aws-cli/role-arn-setup:
+          profile-name: role-assumer-profile
+          role-arn: $SAM_DEPLOYER_ROLE_DEV
+      - run: aws sts assume-role --role-arn $SAM_DEPLOYER_ROLE_DEV --role-session-name SAMCLI-circle-ci-service-Session
+      - sam/build:
+          profile-name: role-assumer-profile
+          template: ./template.yaml
+      - sam/deploy:
+          capabilities: CAPABILITY_NAMED_IAM
+          parameter-overrides: 'Environment="staging"'
+          profile-name: role-assumer-profile
+          stack-name: circle-ci-service-staging
+  deploy-prod:
+    executor: sam/default
+    steps:
+      - checkout
+      - sam/install
+      - aws-cli/role-arn-setup:
+          profile-name: role-assumer-profile
+          role-arn: $SAM_DEPLOYER_ROLE_DEV
+      - run: aws sts assume-role --role-arn $SAM_DEPLOYER_ROLE_DEV --role-session-name SAMCLI-circle-ci-service-Session
+      - sam/build:
+          profile-name: role-assumer-profile
+          template: ./template.yaml
+      - sam/deploy:
+          capabilities: CAPABILITY_NAMED_IAM
+          parameter-overrides: 'Environment="prod"'
+          profile-name: role-assumer-profile
+          stack-name: circle-ci-service-prod
+
+workflows:
+  deploy:
+    jobs:
+      - deploy-dev:
+          filters:
+              branches:
+                only: develop
+      - deploy-staging:
+          filters:
+              branches:
+                only: staging
+      - deploy-prod:
+          filters:
+              branches:
+                only: master
