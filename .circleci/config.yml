@@ -10,11 +10,14 @@ jobs:
     executor: aws-cli/default
     steps:
       - checkout
+      - aws-cli/setup:
+          profile_name: default
       - aws-sam-serverless/install
       - aws-cli/role_arn_setup:
           profile_name: role-assumer-profile
-          role_arn: $SAM_DEPLOYER_ROLE_DEV
-      - run: aws sts assume-role --role-arn $SAM_DEPLOYER_ROLE_DEV --role-session-name SAMCLI-circle-ci-service-Session
+          role_arn: arn:aws:iam::458675076660:role/SAM_DEPLOYER_ROLE_DEV
+          source_profile: default
+      - run: aws sts assume-role --role-arn arn:aws:iam::458675076660:role/SAM_DEPLOYER_ROLE_DEV --role-session-name SAMCLI-circle-ci-service-Session --region us-east-1
       - aws-sam-serverless/build:
           profile_name: role-assumer-profile
           template: ./template.yml
@@ -27,11 +30,14 @@ jobs:
     executor: aws-cli/default
     steps:
       - checkout
+      - aws-cli/setup:
+          profile_name: default
       - aws-sam-serverless/install
       - aws-cli/role_arn_setup:
           profile_name: role-assumer-profile
-          role_arn: $SAM_DEPLOYER_ROLE_DEV
-      - run: aws sts assume-role --role-arn $SAM_DEPLOYER_ROLE_DEV --role-session-name SAMCLI-circle-ci-service-Session
+          role_arn: arn:aws:iam::458675076660:role/SAM_DEPLOYER_ROLE_DEV
+          source_profile: default
+      - run: aws sts assume-role --role_arn arn:aws:iam::458675076660:role/SAM_DEPLOYER_ROLE_DEV --role_session_name SAMCLI-circle-ci-service-Session
       - aws-sam-serverless/build:
           profile_name: role-assumer-profile
           template: ./template.yml
@@ -44,11 +50,14 @@ jobs:
     executor: aws-cli/default
     steps:
       - checkout
+      - aws-cli/setup:
+          profile_name: default
       - aws-sam-serverless/install
       - aws-cli/role_arn_setup:
           profile_name: role-assumer-profile
-          role_arn: $SAM_DEPLOYER_ROLE_DEV
-      - run: aws sts assume-role --role-arn $SAM_DEPLOYER_ROLE_DEV --role-session-name SAMCLI-circle-ci-service-Session
+          role_arn: arn:aws:iam::458675076660:role/SAM_DEPLOYER_ROLE_DEV
+          source_profile: default
+      - run: aws sts assume-role --role_arn arn:aws:iam::458675076660:role/SAM_DEPLOYER_ROLE_DEV --role_session_name SAMCLI-circle-ci-service-Session
       - aws-sam-serverless/build:
           profile_name: role-assumer-profile
           template: ./template.yml
