@@ -22,6 +22,6 @@ Resources:
 
 Outputs:
   CircleCiFunctionEndpoint:
-    Description: "CircleCI 2024 Lambda Function URL"
+    Description: "CircleCI 2024 Lambda Function URLs"
     Value:
       Fn::GetAtt: CircleCiFunctionUrl.FunctionUrl
