@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  Environment:
+    Type: String
+
+Resources:
+  CircleCiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "circle-ci-service-${Environment}"
+      Handler: index.handler
+      Runtime: nodejs18.x
+      CodeUri: src/
+      Environment:
+        Variables:
+          Environment: !Ref Environment
+      FunctionUrlConfig:
+        AuthType: NONE
+
+Outputs:
+  CircleCiFunctionUrl:
+    Description: "Circle Ci Lambda Function URL"
+    Value:
+      Fn::GetAtt: CircleCiFunction.FunctionUrl
