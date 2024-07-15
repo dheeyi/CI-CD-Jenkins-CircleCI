@@ -13,15 +13,18 @@ Resources:
       FunctionName: !Sub "circle-ci-service-${Environment}"
       Handler: index.handler
       Runtime: nodejs20.x
-      CodeUri: src/
+      CodeUri: function.zip
       Environment:
         Variables:
           Environment: !Ref Environment
-      FunctionUrlConfig:
-        AuthType: NONE
+      Events:
+        ApiEvent:
+          Type: HttpApi  # Define HttpApi event
+          Properties:
+            Path: /  # Define the path
+            Method: GET  # Define the method
 
 Outputs:
   CircleCiFunctionUrl:
     Description: "CircleCI 2024 Lambda Function URL"
-    Value:
-      Fn::GetAtt: CircleCiFunction.FunctionUrl
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/"
