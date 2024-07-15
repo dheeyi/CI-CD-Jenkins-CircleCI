@@ -5,11 +5,20 @@ orbs:
   aws-sam-serverless: circleci/aws-sam-serverless@6.0.1
   node: circleci/node@5.2.0
 
+executors:
+  docker-executor:
+    docker:
+      - image: circleci/python:3.8
+    working_directory: ~/project
+
 jobs:
   deploy-dev:
-    executor: aws-cli/default
+    executor: docker-executor
     steps:
       - checkout
+      - run:
+          name: Package code
+          command: zip -r function.zip src/
       - aws-cli/setup:
           profile_name: default
       - aws-sam-serverless/install
@@ -17,7 +26,10 @@ jobs:
           profile_name: role-assumer-profile
           role_arn: arn:aws:iam::458675076660:role/SAM_DEPLOYER_ROLE_DEV
           source_profile: default
-      - run: aws sts assume-role --role-arn arn:aws:iam::458675076660:role/SAM_DEPLOYER_ROLE_DEV --role-session-name SAMCLI-circle-ci-service-Session --region us-east-1
+      - run:
+          name: Assume Role
+          command: aws sts assume-role --role-arn arn:aws:iam::458675076660:role/SAM_DEPLOYER_ROLE_DEV --role-session-name SAMCLI-circle-ci-service-Session
+      - setup_remote_docker
       - aws-sam-serverless/build:
           profile_name: role-assumer-profile
           template: ./template.yml
@@ -26,10 +38,14 @@ jobs:
           parameter_overrides: 'Environment="dev"'
           profile_name: role-assumer-profile
           stack_name: circle-ci-service-dev
+
   deploy-staging:
-    executor: aws-cli/default
+    executor: docker-executor
     steps:
       - checkout
+      - run:
+          name: Package code
+          command: zip -r function.zip src/
       - aws-cli/setup:
           profile_name: default
       - aws-sam-serverless/install
@@ -37,7 +53,10 @@ jobs:
           profile_name: role-assumer-profile
           role_arn: arn:aws:iam::458675076660:role/SAM_DEPLOYER_ROLE_DEV
           source_profile: default
-      - run: aws sts assume-role --role_arn arn:aws:iam::458675076660:role/SAM_DEPLOYER_ROLE_DEV --role_session_name SAMCLI-circle-ci-service-Session
+      - run:
+          name: Assume Role
+          command: aws sts assume-role --role-arn arn:aws:iam::458675076660:role/SAM_DEPLOYER_ROLE_DEV --role-session-name SAMCLI-circle-ci-service-Session
+      - setup_remote_docker
       - aws-sam-serverless/build:
           profile_name: role-assumer-profile
           template: ./template.yml
@@ -46,10 +65,14 @@ jobs:
           parameter_overrides: 'Environment="staging"'
           profile_name: role-assumer-profile
           stack_name: circle-ci-service-staging
+
   deploy-prod:
-    executor: aws-cli/default
+    executor: docker-executor
     steps:
       - checkout
+      - run:
+          name: Package code
+          command: zip -r function.zip src/
       - aws-cli/setup:
           profile_name: default
       - aws-sam-serverless/install
@@ -57,7 +80,10 @@ jobs:
           profile_name: role-assumer-profile
           role_arn: arn:aws:iam::458675076660:role/SAM_DEPLOYER_ROLE_DEV
           source_profile: default
-      - run: aws sts assume-role --role_arn arn:aws:iam::458675076660:role/SAM_DEPLOYER_ROLE_DEV --role_session_name SAMCLI-circle-ci-service-Session
+      - run:
+          name: Assume Role
+          command: aws sts assume-role --role-arn arn:aws:iam::458675076660:role/SAM_DEPLOYER_ROLE_DEV --role-session-name SAMCLI-circle-ci-service-Session
+      - setup_remote_docker
       - aws-sam-serverless/build:
           profile_name: role-assumer-profile
           template: ./template.yml
