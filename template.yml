@@ -17,14 +17,11 @@ Resources:
       Environment:
         Variables:
           Environment: !Ref Environment
-      Events:
-        ApiEvent:
-          Type: HttpApi  # Define HttpApi event
-          Properties:
-            Path: /  # Define the path
-            Method: GET  # Define the method
+      FunctionUrlConfig:
+        AuthType: NONE
 
 Outputs:
-  CircleCiFunctionUrl:
+  CircleCiFunctionEndpoint:
     Description: "CircleCI 2024 Lambda Function URL"
-    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/"
+    Value:
+      Fn::GetAtt: CircleCiFunctionUrl.FunctionUrl
