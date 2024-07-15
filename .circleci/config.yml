@@ -7,69 +7,72 @@ orbs:
 
 jobs:
   deploy-dev:
-    executor: sam/default
+    executor: aws-cli/default
     steps:
       - checkout
-      - sam/install
-      - aws-cli/role-arn-setup:
-          profile-name: role-assumer-profile
-          role-arn: $SAM_DEPLOYER_ROLE_DEV
+      - aws-sam-serverless/install
+      - aws-cli/role_arn_setup:
+          profile_name: role-assumer-profile
+          role_arn: $SAM_DEPLOYER_ROLE_DEV
       - run: aws sts assume-role --role-arn $SAM_DEPLOYER_ROLE_DEV --role-session-name SAMCLI-circle-ci-service-Session
-      - sam/build:
-          profile-name: role-assumer-profile
-          template: ./template.yaml
-      - sam/deploy:
+      - aws-sam-serverless/build:
+          profile_name: role-assumer-profile
+          template: ./template.yml
+      - aws-sam-serverless/deploy:
           capabilities: CAPABILITY_NAMED_IAM
-          parameter-overrides: 'Environment="dev"'
-          profile-name: role-assumer-profile
-          stack-name: circle-ci-service-dev
+          parameter_overrides: 'Environment="dev"'
+          profile_name: role-assumer-profile
+          stack_name: circle-ci-service-dev
   deploy-staging:
-    executor: sam/default
+    executor: aws-cli/default
     steps:
       - checkout
-      - sam/install
-      - aws-cli/role-arn-setup:
-          profile-name: role-assumer-profile
-          role-arn: $SAM_DEPLOYER_ROLE_DEV
+      - aws-sam-serverless/install
+      - aws-cli/role_arn_setup:
+          profile_name: role-assumer-profile
+          role_arn: $SAM_DEPLOYER_ROLE_DEV
       - run: aws sts assume-role --role-arn $SAM_DEPLOYER_ROLE_DEV --role-session-name SAMCLI-circle-ci-service-Session
-      - sam/build:
-          profile-name: role-assumer-profile
-          template: ./template.yaml
-      - sam/deploy:
+      - aws-sam-serverless/build:
+          profile_name: role-assumer-profile
+          template: ./template.yml
+      - aws-sam-serverless/deploy:
           capabilities: CAPABILITY_NAMED_IAM
-          parameter-overrides: 'Environment="staging"'
-          profile-name: role-assumer-profile
-          stack-name: circle-ci-service-staging
+          parameter_overrides: 'Environment="staging"'
+          profile_name: role-assumer-profile
+          stack_name: circle-ci-service-staging
   deploy-prod:
-    executor: sam/default
+    executor: aws-cli/default
     steps:
       - checkout
-      - sam/install
-      - aws-cli/role-arn-setup:
-          profile-name: role-assumer-profile
-          role-arn: $SAM_DEPLOYER_ROLE_DEV
+      - aws-sam-serverless/install
+      - aws-cli/role_arn_setup:
+          profile_name: role-assumer-profile
+          role_arn: $SAM_DEPLOYER_ROLE_DEV
       - run: aws sts assume-role --role-arn $SAM_DEPLOYER_ROLE_DEV --role-session-name SAMCLI-circle-ci-service-Session
-      - sam/build:
-          profile-name: role-assumer-profile
-          template: ./template.yaml
-      - sam/deploy:
+      - aws-sam-serverless/build:
+          profile_name: role-assumer-profile
+          template: ./template.yml
+      - aws-sam-serverless/deploy:
           capabilities: CAPABILITY_NAMED_IAM
-          parameter-overrides: 'Environment="prod"'
-          profile-name: role-assumer-profile
-          stack-name: circle-ci-service-prod
+          parameter_overrides: 'Environment="prod"'
+          profile_name: role-assumer-profile
+          stack_name: circle-ci-service-prod
 
 workflows:
-  deploy:
+  circle-ci-workflow:
     jobs:
       - deploy-dev:
+          context: aws
           filters:
-              branches:
-                only: develop
+            branches:
+              only: develop
       - deploy-staging:
+          context: aws
           filters:
-              branches:
-                only: staging
+            branches:
+              only: staging
       - deploy-prod:
+          context: aws
           filters:
-              branches:
-                only: master
+            branches:
+              only: master
