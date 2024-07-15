@@ -18,7 +18,9 @@ jobs:
       - checkout
       - run:
           name: Package code
-          command: zip -r function.zip src/
+          command: |
+            cp -r src/* .
+            zip -r function.zip .
       - aws-cli/setup:
           profile_name: default
       - aws-sam-serverless/install
@@ -45,7 +47,9 @@ jobs:
       - checkout
       - run:
           name: Package code
-          command: zip -r function.zip src/
+          command: |
+            cp -r src/* .
+            zip -r function.zip .
       - aws-cli/setup:
           profile_name: default
       - aws-sam-serverless/install
@@ -72,7 +76,9 @@ jobs:
       - checkout
       - run:
           name: Package code
-          command: zip -r function.zip src/
+          command: |
+            cp -r src/* .
+            zip -r function.zip .
       - aws-cli/setup:
           profile_name: default
       - aws-sam-serverless/install
